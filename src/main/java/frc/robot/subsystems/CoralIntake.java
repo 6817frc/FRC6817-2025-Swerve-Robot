@@ -6,11 +6,13 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkRelativeEncoder;
+import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -18,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Ports;
 import frc.robot.commands.intake.CoralIntakeMovement;
+import com.revrobotics.spark.SparkBase.ResetMode;
 
 public class CoralIntake extends SubsystemBase {
   /** Creates a new Intake. */
@@ -40,16 +43,21 @@ public class CoralIntake extends SubsystemBase {
     m_LED.start();
 
     m_intakeWheels = new SparkMax(Ports.CAN.Intake, MotorType.kBrushless); //TODO update for new motors
-    m_intakeWheels.setIdleMode(SparkBaseConfig.IdleMode.kBrake); //TODO update for new motors
-    m_intakeArm = new SparkMax(Ports.CAN.Arm, MotorType.kBrushed); //TODO update for new motors
-    m_intakeArm.setInverted(true); //TODO check whether this needs to be inverted
-    m_intakeArm.setIdleMode(IdleMode.kBrake); //TODO update for new motors
-    armPID = m_intakeArm.getClosedLoopController(); //TODO update for new motors
-    armPID.setOutputRange(-0.5, 0.25);
+    SparkMaxConfig wheelConfig = new SparkMaxConfig();
+    wheelConfig.inverted(false).idleMode(IdleMode.kBrake); //TODO update for new motors
 
+    m_intakeArm = new SparkMax(Ports.CAN.Arm, MotorType.kBrushed); //TODO update for new motors
+    SparkMaxConfig armConfig = new SparkMaxConfig();
+    armConfig.inverted(true).idleMode(IdleMode.kBrake); //TODO update for new motors
+    armConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(1.0, 0.0, 0.0); //TODO update for new motors
+
+    armPID.setOutputRange(-0.5, 0.25);
+    m_intakeWheels.configure(wheelConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    m_intakeArm.configure(armConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    
     double value = SmartDashboard.getNumber("PValue", 3);
     SmartDashboard.putNumber("PValue", value);
-    armEncoder = m_intakeArm.getEncoder(SparkRelativeEncoder.Type.kQuadrature, 2048);
+    armEncoder = m_intakeArm.getEncoder();
     encoderOffset = 0; 
   }
     
