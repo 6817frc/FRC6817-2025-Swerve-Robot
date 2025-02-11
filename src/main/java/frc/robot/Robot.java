@@ -152,9 +152,9 @@ public class Robot extends TimedRobot {
     	SmartDashboard.putNumber("RealEncoderPosArm", m_robotContainer.intake.realMotorPos());
 		// SmartDashboard.putNumber("ClimbEncoderPos", m_robotContainer.climber.frontEncoder.getPosition()); //TODO uncomment this
     	// SmartDashboard.putNumber("RealEncoderPosClimb", m_robotContainer.climber.realMotorPos());
-		SmartDashboard.putNumber("P", m_robotContainer.intake.armPID.getP());
-		SmartDashboard.putNumber("I", m_robotContainer.intake.armPID.getI());
-		SmartDashboard.putNumber("D", m_robotContainer.intake.armPID.getD());
+		// SmartDashboard.putNumber("P", m_robotContainer.intake.armPID.getP()); //TODO maybe add armPID and check values
+		// SmartDashboard.putNumber("I", m_robotContainer.intake.armPID.getI());
+		// SmartDashboard.putNumber("D", m_robotContainer.intake.armPID.getD());
 
 
 	} 

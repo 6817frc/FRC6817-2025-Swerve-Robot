@@ -8,7 +8,6 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkRelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -30,7 +29,7 @@ public class CoralIntake extends SubsystemBase {
   public final AddressableLEDBuffer m_LedBuffer;
   public final SparkMax m_intakeWheels;
 	public final SparkMax m_intakeArm;
-  public final SparkClosedLoopController armPID;
+  // public final SparkClosedLoopController armPID;
   public final RelativeEncoder armEncoder;
   private double encoderOffset;
   private double realMotorPos;
@@ -50,8 +49,8 @@ public class CoralIntake extends SubsystemBase {
     SparkMaxConfig armConfig = new SparkMaxConfig();
     armConfig.inverted(true).idleMode(IdleMode.kBrake); //TODO update for new motors
     armConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(1.0, 0.0, 0.0); //TODO update for new motors
-
-    armPID.setOutputRange(-0.5, 0.25);
+    
+    // armPID.setOutputRange(-0.5, 0.25);  //TODO doesn't work anymore so find out how to limit motor output
     m_intakeWheels.configure(wheelConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     m_intakeArm.configure(armConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     
