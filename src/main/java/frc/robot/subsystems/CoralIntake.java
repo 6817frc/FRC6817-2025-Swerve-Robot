@@ -28,7 +28,9 @@ public class CoralIntake extends SubsystemBase {
   public final AddressableLED m_LED;
   public final AddressableLEDBuffer m_LedBuffer;
   public final SparkMax m_intakeWheels;
-	public final SparkMax m_intakeArm;
+  public final SparkMax m_intakeWrist;
+	public final SparkMax m_intakeArm1;
+  public final SparkMax m_intakeArm2;
   // public final SparkClosedLoopController armPID;
   public final RelativeEncoder armEncoder;
   private double encoderOffset;
@@ -41,22 +43,36 @@ public class CoralIntake extends SubsystemBase {
     m_LED.setData(m_LedBuffer);
     m_LED.start();
 
+    //This sets the configuration for the motor controlling the wheels of the intake subsystem
     m_intakeWheels = new SparkMax(Ports.CAN.Intake, MotorType.kBrushless); //TODO update for new motors
     SparkMaxConfig wheelConfig = new SparkMaxConfig();
     wheelConfig.inverted(false).idleMode(IdleMode.kBrake); //TODO update for new motors
 
-    m_intakeArm = new SparkMax(Ports.CAN.Arm, MotorType.kBrushed); //TODO update for new motors
-    SparkMaxConfig armConfig = new SparkMaxConfig();
-    armConfig.inverted(true).idleMode(IdleMode.kBrake); //TODO update for new motors
-    armConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(1.0, 0.0, 0.0); //TODO update for new motors
+    //This sets the config for the motor controlling the additional arm movement
+    m_intakeWrist = new SparkMax(Ports.CAN.Wrist, MotorType.kBrushless);
+    SparkMaxConfig wristConfig = new SparkMaxConfig();
+    wristConfig.inverted(false).idleMode(IdleMode.kBrake);
+
+    //This sets the configuration for one motor controlling the ovrall arm movement
+    m_intakeArm1 = new SparkMax(Ports.CAN.Arm1, MotorType.kBrushed); //TODO update for new motors
+    SparkMaxConfig arm1Config = new SparkMaxConfig();
+    arm1Config.inverted(true).idleMode(IdleMode.kBrake); //TODO update for new motors
+    arm1Config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(1.0, 0.0, 0.0); //TODO update for new motors
     
+    //This sets the configuration for other motor controlling the ovrall arm movement
+    m_intakeArm2 = new SparkMax(Ports.CAN.Arm2, MotorType.kBrushless);
+    SparkMaxConfig arm2Config = new SparkMaxConfig();
+    arm2Config.inverted(false).idleMode(IdleMode.kBrake);
+
     // armPID.setOutputRange(-0.5, 0.25);  //TODO doesn't work anymore so find out how to limit motor output
     m_intakeWheels.configure(wheelConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-    m_intakeArm.configure(armConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    m_intakeWrist.configure(wristConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    m_intakeArm1.configure(arm1Config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    m_intakeArm2.configure(arm2Config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     
     double value = SmartDashboard.getNumber("PValue", 3);
     SmartDashboard.putNumber("PValue", value);
-    armEncoder = m_intakeArm.getEncoder();
+    armEncoder = m_intakeArm1.getEncoder();
     encoderOffset = 0; 
   }
     

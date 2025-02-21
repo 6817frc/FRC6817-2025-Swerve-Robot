@@ -228,7 +228,7 @@ public class RobotContainer {
 
 		/*------------------ JoyMain ------------------*/
 
-		joyMain.button(5).onTrue(Commands.runOnce(() -> intakeMove.execute())); //button:LB
+		joyMain.button(5).onTrue(Commands.runOnce(() -> intakeMove.execute())); //command test :button:LB
 
 		joyMain.button(6).onTrue(Commands.runOnce(() -> toggleSpeed())); //button:RB
 

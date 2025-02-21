@@ -68,9 +68,10 @@ public class Ports {
 			public static final int REAR_RIGHT_TURNING = 2;
 
 			public static final int Intake = 9;
-			public static final int Arm = 10;
-			public static final int ClimbFront = 11;
-			public static final int ClimbBack = 12;
+			public static final int Wrist = 10;
+			public static final int Arm1 = 11;
+			public static final int Arm2 = 12;
+			public static final int Climb = 13;
 
 		}
 		

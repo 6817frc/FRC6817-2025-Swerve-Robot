@@ -5,9 +5,12 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,12 +18,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Ports;
 
 public class Climber extends SubsystemBase {
-  // public final SparkMax m_climbFront; //TODO uncomment here to...
-	// public final SparkMax m_climbBack;
-  // public final SparkClosedLoopController frontClimbPID;
-  // public final SparkClosedLoopController backClimbPID;
+  public final SparkMax m_climb;
   // public final RelativeEncoder frontEncoder;
-  // public final RelativeEncoder backEncoder; //TODO...here
+  // public final RelativeEncoder backEncoder;
   // private final DigitalInput limitSwitch = new DigitalInput(1);
   private double frontEncoderOffset;
   private double backEncoderOffset;
@@ -28,21 +28,19 @@ public class Climber extends SubsystemBase {
 
   /** Creates a new Climber. */
   public Climber() {
-    // m_climbFront = new SparkMax(Ports.CAN.ClimbFront, MotorType.kBrushless); //TODO uncomment here to...
-    // m_climbBack = new SparkMax(Ports.CAN.ClimbBack, MotorType.kBrushless);
-    // m_climbFront.setIdleMode(IdleMode.kBrake);
-    // m_climbBack.setIdleMode(IdleMode.kBrake);
-    // frontClimbPID = m_climbFront.getPIDController();
-    // backClimbPID = m_climbBack.getPIDController();
-    // frontClimbPID.setOutputRange(-0.5, 0.3);
-    // backClimbPID.setOutputRange(-0.5, 0.3);
+    m_climb = new SparkMax(Ports.CAN.Climb, MotorType.kBrushless); //TODO update for new motors
+    SparkMaxConfig climbConfig = new SparkMaxConfig();
+    climbConfig.inverted(false).idleMode(IdleMode.kBrake);
     double value = SmartDashboard.getNumber("climbPValue", 0.05);
     SmartDashboard.putNumber("climbPValue", value);
-    // frontEncoder = m_climbFront.getEncoder();
+
+    m_climb.configure(climbConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+
+    // frontEncoder = m_climbFront.getEncoder(); //this was used last year
     // backEncoder = m_climbBack.getEncoder();
-    frontEncoderOffset = 0;
-    backEncoderOffset = 0;
-    // m_climbBack.follow(m_climbFront); // TODO...here
+    // frontEncoderOffset = 0;
+    // backEncoderOffset = 0;
+    // m_climbBack.follow(m_climbFront); // TODO check whether this needs to be used
   }
 
   @Override
