@@ -234,6 +234,8 @@ public class RobotContainer {
 
 		joyMain.start().onTrue(Commands.runOnce(() -> toggleRelative()));
 
+		joyMain.button(1).whileTrue(Commands.runOnce(() -> intake.moveTest()));
+
 		// joyMain.button(5).onTrue(Commands.runOnce(() -> climber.moveUp())); //button:LB
 
 		// joyMain.povUp().onTrue(Commands.runOnce(() -> climber.moveUptoPos())); 

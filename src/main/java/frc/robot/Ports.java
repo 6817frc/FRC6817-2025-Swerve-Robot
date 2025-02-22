@@ -67,7 +67,7 @@ public class Ports {
 			public static final int FRONT_RIGHT_TURNING = 4;
 			public static final int REAR_RIGHT_TURNING = 2;
 
-			public static final int Intake = 9;
+			public static final int IntakeWheels = 9;
 			public static final int Wrist = 10;
 			public static final int Arm1 = 11;
 			public static final int Arm2 = 12;

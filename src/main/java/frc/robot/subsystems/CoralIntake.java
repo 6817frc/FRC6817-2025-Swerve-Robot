@@ -44,7 +44,7 @@ public class CoralIntake extends SubsystemBase {
     m_LED.start();
 
     //This sets the configuration for the motor controlling the wheels of the intake subsystem
-    m_intakeWheels = new SparkMax(Ports.CAN.Intake, MotorType.kBrushless); //TODO update for new motors
+    m_intakeWheels = new SparkMax(Ports.CAN.IntakeWheels, MotorType.kBrushless); //TODO update for new motors
     SparkMaxConfig wheelConfig = new SparkMaxConfig();
     wheelConfig.inverted(false).idleMode(IdleMode.kBrake); //TODO update for new motors
 
@@ -53,16 +53,17 @@ public class CoralIntake extends SubsystemBase {
     SparkMaxConfig wristConfig = new SparkMaxConfig();
     wristConfig.inverted(false).idleMode(IdleMode.kBrake);
 
-    //This sets the configuration for one motor controlling the ovrall arm movement
-    m_intakeArm1 = new SparkMax(Ports.CAN.Arm1, MotorType.kBrushed); //TODO update for new motors
+    //This sets the configuration for one motor controlling the overall arm movement
+    m_intakeArm1 = new SparkMax(Ports.CAN.Arm1, MotorType.kBrushless); //TODO update for new motors
     SparkMaxConfig arm1Config = new SparkMaxConfig();
     arm1Config.inverted(true).idleMode(IdleMode.kBrake); //TODO update for new motors
     arm1Config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(1.0, 0.0, 0.0); //TODO update for new motors
     
-    //This sets the configuration for other motor controlling the ovrall arm movement
+    /*This sets the configuration for other motor controlling the overall arm movement
+    This motor is set to follow the other arm motor and is reversed because they are on opposite sides */
     m_intakeArm2 = new SparkMax(Ports.CAN.Arm2, MotorType.kBrushless);
     SparkMaxConfig arm2Config = new SparkMaxConfig();
-    arm2Config.inverted(false).idleMode(IdleMode.kBrake);
+    arm2Config.follow(m_intakeArm1,true).idleMode(IdleMode.kBrake);
 
     // armPID.setOutputRange(-0.5, 0.25);  //TODO doesn't work anymore so find out how to limit motor output
     m_intakeWheels.configure(wheelConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -86,6 +87,10 @@ public class CoralIntake extends SubsystemBase {
     public double realMotorPos() {
       realMotorPos = armEncoder.getPosition() - encoderOffset;
       return realMotorPos;
+    }
+
+    public void moveTest() {
+        m_intakeArm1.set(0.05);
     }
 
     @Override
