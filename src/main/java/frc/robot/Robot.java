@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.CoralIntake;
 
 import com.revrobotics.RelativeEncoder;
 
@@ -23,6 +24,7 @@ public class Robot extends TimedRobot {
 	private Command m_autonomousCommand;
 
 	private RobotContainer m_robotContainer;
+	private CoralIntake m_coralIntake;
 
 	/**
 	 * This function is run when the robot is first started up and should be used for any
@@ -148,10 +150,6 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putString("Start position", m_robotContainer.getStartPositionChooser().getSelected());
 
 		// SmartDashboard.putNumber("SetPoint", rotations);
-    	SmartDashboard.putNumber("ArmEncoderPos", m_robotContainer.intake.armEncoder.getPosition());
-    	SmartDashboard.putNumber("RealEncoderPosArm", m_robotContainer.intake.realMotorPos());
-		// SmartDashboard.putNumber("ClimbEncoderPos", m_robotContainer.climber.frontEncoder.getPosition()); //TODO uncomment this
-    	// SmartDashboard.putNumber("RealEncoderPosClimb", m_robotContainer.climber.realMotorPos());
 		// SmartDashboard.putNumber("P", m_robotContainer.intake.armPID.getP()); //TODO maybe add armPID and check values
 		// SmartDashboard.putNumber("I", m_robotContainer.intake.armPID.getI());
 		// SmartDashboard.putNumber("D", m_robotContainer.intake.armPID.getD());

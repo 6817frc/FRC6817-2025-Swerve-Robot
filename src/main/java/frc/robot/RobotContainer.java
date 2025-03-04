@@ -185,6 +185,15 @@ public class RobotContainer {
 					-MathUtil.applyDeadband(joyMain.getRightX() * speedMult, JOYSTICK_AXIS_THRESHOLD),
 					fieldRelative, true),
 				drivetrain));
+		
+		// Basic targeting data
+		double tx = LimelightHelpers.getTX("");  // Horizontal offset from crosshair to target in degrees
+		double ty = LimelightHelpers.getTY("");  // Vertical offset from crosshair to target in degrees
+		double ta = LimelightHelpers.getTA("");  // Target area (0% to 100% of image)
+		boolean hasTarget = LimelightHelpers.getTV(""); // Do you have a valid target?
+
+		double txnc = LimelightHelpers.getTXNC("");  // Horizontal offset from principal pixel/point to target in degrees
+		double tync = LimelightHelpers.getTYNC("");  // Vertical  offset from principal pixel/point to target in degrees
 	}	
 
 	/**
@@ -234,7 +243,9 @@ public class RobotContainer {
 
 		joyMain.start().onTrue(Commands.runOnce(() -> toggleRelative()));
 
-		joyMain.button(1).whileTrue(Commands.runOnce(() -> intake.moveTest()));
+		joyMain.button(1).whileTrue(Commands.runOnce(() -> intake.moveTest())); //button:a
+
+		joyMain.button(2).whileTrue(Commands.runOnce(() -> climber.moveTest2())); //button:b
 
 		// joyMain.button(5).onTrue(Commands.runOnce(() -> climber.moveUp())); //button:LB
 

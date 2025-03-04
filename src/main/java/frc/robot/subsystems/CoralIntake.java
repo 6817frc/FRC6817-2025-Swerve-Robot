@@ -7,14 +7,17 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkRelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkClosedLoopController;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Ports;
@@ -30,11 +33,10 @@ public class CoralIntake extends SubsystemBase {
   public final SparkMax m_intakeWheels;
   public final SparkMax m_intakeWrist;
 	public final SparkMax m_intakeArm1;
+  public final SparkClosedLoopController armClosedLoopController;
+  public final DutyCycleEncoder armEncoder;
   public final SparkMax m_intakeArm2;
   // public final SparkClosedLoopController armPID;
-  public final RelativeEncoder armEncoder;
-  private double encoderOffset;
-  private double realMotorPos;
 
   public CoralIntake() {
     m_LED = new AddressableLED(Ports.PWM.LED_STRIP);
@@ -58,6 +60,8 @@ public class CoralIntake extends SubsystemBase {
     SparkMaxConfig arm1Config = new SparkMaxConfig();
     arm1Config.inverted(true).idleMode(IdleMode.kBrake); //TODO update for new motors
     arm1Config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(1.0, 0.0, 0.0); //TODO update for new motors
+    armClosedLoopController = m_intakeArm1.getClosedLoopController();
+    armEncoder = new DutyCycleEncoder(0);
     
     /*This sets the configuration for other motor controlling the overall arm movement
     This motor is set to follow the other arm motor and is reversed because they are on opposite sides */
@@ -73,24 +77,16 @@ public class CoralIntake extends SubsystemBase {
     
     double value = SmartDashboard.getNumber("PValue", 3);
     SmartDashboard.putNumber("PValue", value);
-    armEncoder = m_intakeArm1.getEncoder();
-    encoderOffset = 0; 
+    SmartDashboard.putNumber("Arm Position", armEncoder.get());
   }
     
-    //sets the offset as the current value of the encoder
-    public void resetArmEncoder() {
-      encoderOffset = armEncoder.getPosition();
-    }
-
-    /*subtracts the offset from the current position 
-    and sets that as the new motor position*/
-    public double realMotorPos() {
-      realMotorPos = armEncoder.getPosition() - encoderOffset;
-      return realMotorPos;
-    }
-
     public void moveTest() {
-        m_intakeArm1.set(0.05);
+      // m_intakeArm1.set(0.05); //positive is up 
+      armClosedLoopController.setReference(20, SparkMax.ControlType.kPosition);
+    }
+
+    public void stopIntake() {
+      m_intakeArm1.set(0);
     }
 
     @Override

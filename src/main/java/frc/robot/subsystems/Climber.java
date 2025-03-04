@@ -43,6 +43,14 @@ public class Climber extends SubsystemBase {
     // m_climbBack.follow(m_climbFront); // TODO check whether this needs to be used
   }
 
+  public void moveTest2() {
+    m_climb.set(0.05);
+  }
+
+  public void stopClimb() {
+    m_climb.set(0);
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
