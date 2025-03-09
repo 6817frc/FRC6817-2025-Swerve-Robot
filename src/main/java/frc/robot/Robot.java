@@ -12,6 +12,7 @@ import frc.robot.subsystems.CoralIntake;
 
 import com.revrobotics.RelativeEncoder;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.net.PortForwarder;
 
 /**
@@ -24,7 +25,6 @@ public class Robot extends TimedRobot {
 	private Command m_autonomousCommand;
 
 	private RobotContainer m_robotContainer;
-	private CoralIntake m_coralIntake;
 
 	/**
 	 * This function is run when the robot is first started up and should be used for any
@@ -136,6 +136,9 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putNumber("FrontRightTurningDesiredState", m_robotContainer.getDrivetrain().getFrontRightModule().getDesiredState().angle.getRadians());
 		SmartDashboard.putNumber("RearRightTurningDesiredState", m_robotContainer.getDrivetrain().getRearRightModule().getDesiredState().angle.getRadians());
 
+		SmartDashboard.putNumber("Arm Position", m_robotContainer.intake.armEncoder.getPosition());
+		SmartDashboard.putNumber("Wrist Position", m_robotContainer.intake.wristEncoder.getPosition());
+
 		/* Display 6-axis Processed Angle Data                                      */
 		// SmartDashboard.putBoolean(  "IMU_Connected",        m_robotContainer.getDrivetrain().getImu().isConnected());
 		// SmartDashboard.putBoolean(  "IMU_IsCalibrating",    m_robotContainer.getDrivetrain().getImu().isCalibrating());
@@ -153,8 +156,6 @@ public class Robot extends TimedRobot {
 		// SmartDashboard.putNumber("P", m_robotContainer.intake.armPID.getP()); //TODO maybe add armPID and check values
 		// SmartDashboard.putNumber("I", m_robotContainer.intake.armPID.getI());
 		// SmartDashboard.putNumber("D", m_robotContainer.intake.armPID.getD());
-
-
 	} 
 
 	@Override

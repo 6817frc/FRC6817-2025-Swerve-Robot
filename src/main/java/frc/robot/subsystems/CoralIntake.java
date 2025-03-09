@@ -13,6 +13,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkClosedLoopController;
 import edu.wpi.first.wpilibj.AddressableLED;
@@ -34,7 +35,9 @@ public class CoralIntake extends SubsystemBase {
   public final SparkMax m_intakeWrist;
 	public final SparkMax m_intakeArm1;
   public final SparkClosedLoopController armClosedLoopController;
-  public final DutyCycleEncoder armEncoder;
+  public final SparkClosedLoopController wristClosedLoopController;
+  public final AbsoluteEncoder armEncoder;
+  public final AbsoluteEncoder wristEncoder;
   public final SparkMax m_intakeArm2;
   // public final SparkClosedLoopController armPID;
 
@@ -54,20 +57,25 @@ public class CoralIntake extends SubsystemBase {
     m_intakeWrist = new SparkMax(Ports.CAN.Wrist, MotorType.kBrushless);
     SparkMaxConfig wristConfig = new SparkMaxConfig();
     wristConfig.inverted(false).idleMode(IdleMode.kBrake);
+    wristConfig.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder).pid(0.5, 0.0, 0.0, ClosedLoopSlot.kSlot0)
+    .pid(0.3, 0.0, 0.0, ClosedLoopSlot.kSlot1);
+    wristClosedLoopController = m_intakeWrist.getClosedLoopController();
+    wristEncoder = m_intakeWrist.getAbsoluteEncoder();
 
-    //This sets the configuration for one motor controlling the overall arm movement
-    m_intakeArm1 = new SparkMax(Ports.CAN.Arm1, MotorType.kBrushless); //TODO update for new motors
-    SparkMaxConfig arm1Config = new SparkMaxConfig();
-    arm1Config.inverted(true).idleMode(IdleMode.kBrake); //TODO update for new motors
-    arm1Config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(1.0, 0.0, 0.0); //TODO update for new motors
-    armClosedLoopController = m_intakeArm1.getClosedLoopController();
-    armEncoder = new DutyCycleEncoder(0);
-    
     /*This sets the configuration for other motor controlling the overall arm movement
     This motor is set to follow the other arm motor and is reversed because they are on opposite sides */
     m_intakeArm2 = new SparkMax(Ports.CAN.Arm2, MotorType.kBrushless);
     SparkMaxConfig arm2Config = new SparkMaxConfig();
-    arm2Config.follow(m_intakeArm1,true).idleMode(IdleMode.kBrake);
+    arm2Config.inverted(true).idleMode(IdleMode.kBrake);
+    arm2Config.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder).pid(3.0, 0.0, 0.0, ClosedLoopSlot.kSlot0)
+    .pid(1.0, 0.0, 0.0, ClosedLoopSlot.kSlot1); //TODO update for new motors
+    armClosedLoopController = m_intakeArm2.getClosedLoopController();
+    armEncoder = m_intakeArm2.getAbsoluteEncoder();
+
+    //This sets the configuration for one motor controlling the overall arm movement
+    m_intakeArm1 = new SparkMax(Ports.CAN.Arm1, MotorType.kBrushless); //TODO update for new motors
+    SparkMaxConfig arm1Config = new SparkMaxConfig();
+    arm1Config.follow(m_intakeArm2, true).idleMode(IdleMode.kBrake);
 
     // armPID.setOutputRange(-0.5, 0.25);  //TODO doesn't work anymore so find out how to limit motor output
     m_intakeWheels.configure(wheelConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -77,16 +85,88 @@ public class CoralIntake extends SubsystemBase {
     
     double value = SmartDashboard.getNumber("PValue", 3);
     SmartDashboard.putNumber("PValue", value);
-    SmartDashboard.putNumber("Arm Position", armEncoder.get());
   }
+    double L1Position = 0.0; //TODO change to real value
+    double L2Position = 0.29;
+    double L3Position = 0.0; //TODO change to real value
+    double L4Position = 0.0; //TODO change to real value
+    double safePosition = 0.0; //TODO change to real value
+    boolean armManualMode = false;
+    boolean wristManualMode = false;
+
+    /* Functions for various arm movements: */
+
+    //moves arm based on joystick input
+    public void armMove(double LeftYValue) {
+      if (LeftYValue != 0) {
+        armManualMode = true;
+        armClosedLoopController.setReference(0.3 * LeftYValue, SparkMax.ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+      } else if (armManualMode == true && LeftYValue == 0) {
+        armClosedLoopController.setReference(0.0, SparkMax.ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+        armClosedLoopController.setReference(armEncoder.getPosition(), SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
+        armManualMode = false;
+      }
+    }
+    //moves arm to to score on level 1
+    public void armL1() {
+      armClosedLoopController.setReference(L1Position, SparkMax.ControlType.kPosition);
+    }
+    //moves arm to score on level 2
+    public void armL2() {
+      armClosedLoopController.setReference(L2Position, SparkMax.ControlType.kPosition);
+      // wristClosedLoopController.setReference(0.93, SparkMax.ControlType.kPosition);
+
+    }
+    //moves arm to score on level 3
+    public void armL3() {
+      armClosedLoopController.setReference(L3Position, SparkMax.ControlType.kPosition);
+    }
+    //moves arm to score on level 4
+    public void armL4() {
+      armClosedLoopController.setReference(L4Position, SparkMax.ControlType.kPosition);
+    }
+    //moves arm to a position where it is safe to travel across the field
+    public void armSafe() {
+      armClosedLoopController.setReference(safePosition, SparkMax.ControlType.kPosition);
+    }
+    //stops all arm movement
+    public void stopIntake() {
+      m_intakeArm2.set(0);
+    }
     
-    public void moveTest() {
-      // m_intakeArm1.set(0.05); //positive is up 
-      armClosedLoopController.setReference(20, SparkMax.ControlType.kPosition);
+    public void wristTest() {
+      wristClosedLoopController.setReference(0.35, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
     }
 
-    public void stopIntake() {
-      m_intakeArm1.set(0);
+    /* Functions for various wrist movements: */
+
+    //moves wrist using joystick input
+    public void wristMove(double RightYValue) {
+      if (RightYValue != 0) {
+        wristManualMode = true;
+        wristClosedLoopController.setReference(0.5 * RightYValue, SparkMax.ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+      } else if (wristManualMode == true && RightYValue == 0) {
+        wristClosedLoopController.setReference(0.0, SparkMax.ControlType.kVelocity, ClosedLoopSlot.kSlot1);
+        wristClosedLoopController.setReference(wristEncoder.getPosition(), SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
+        wristManualMode = false;
+      }
+    }
+
+    //stops all wrist movement
+    public void stopWrist() {
+      m_intakeWrist.set(0);
+    }
+    //moves wheels for intake
+    public void wheelMove() {
+      m_intakeWheels.set(0.25);
+    }
+    //moves wheels for outake
+    public void wheelRev() {
+      m_intakeWheels.set(-1.0);
+    }
+    //stops all wheel movement
+    public void stopWheels() {
+      m_intakeWheels.set(0);
     }
 
     @Override
