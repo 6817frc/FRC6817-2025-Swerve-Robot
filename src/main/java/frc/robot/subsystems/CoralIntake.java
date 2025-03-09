@@ -22,8 +22,10 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Ports;
+import frc.robot.RobotContainer;
 import frc.robot.commands.intake.CoralIntakeMovement;
 import com.revrobotics.spark.SparkBase.ResetMode;
+
 
 public class CoralIntake extends SubsystemBase {
   /** Creates a new Intake. */
@@ -56,9 +58,9 @@ public class CoralIntake extends SubsystemBase {
     //This sets the config for the motor controlling the additional arm movement
     m_intakeWrist = new SparkMax(Ports.CAN.Wrist, MotorType.kBrushless);
     SparkMaxConfig wristConfig = new SparkMaxConfig();
-    wristConfig.inverted(false).idleMode(IdleMode.kBrake);
-    wristConfig.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder).pid(0.5, 0.0, 0.0, ClosedLoopSlot.kSlot0)
-    .pid(0.3, 0.0, 0.0, ClosedLoopSlot.kSlot1);
+    wristConfig.inverted(true).idleMode(IdleMode.kBrake);
+    wristConfig.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder).pid(1.8, 0.0, 0.0, ClosedLoopSlot.kSlot0)
+    .pid(0.3, 0.0, 0.0, ClosedLoopSlot.kSlot1).maxOutput(0.15, ClosedLoopSlot.kSlot0).minOutput(-0.15, ClosedLoopSlot.kSlot0);
     wristClosedLoopController = m_intakeWrist.getClosedLoopController();
     wristEncoder = m_intakeWrist.getAbsoluteEncoder();
 
@@ -86,13 +88,16 @@ public class CoralIntake extends SubsystemBase {
     double value = SmartDashboard.getNumber("PValue", 3);
     SmartDashboard.putNumber("PValue", value);
   }
-    double L1Position = 0.0; //TODO change to real value
-    double L2Position = 0.29;
-    double L3Position = 0.0; //TODO change to real value
-    double L4Position = 0.0; //TODO change to real value
-    double safePosition = 0.0; //TODO change to real value
+    double L1Position = 0.35; //TODO change to real value
+    double L2Position = 0.27; 
+    double L3Position = 0.29; //wrist:0.43
+    double L4Position = 0.35; //TODO change to real value //wwrist:
+    double safePosition = 0.51; //wrist:0.23
+    double intakePosition = 0.28; //wrist:0.38
     boolean armManualMode = false;
     boolean wristManualMode = false;
+    boolean leftManualMode = false;
+    boolean rightManualMode = false;
 
     /* Functions for various arm movements: */
 
@@ -113,13 +118,14 @@ public class CoralIntake extends SubsystemBase {
     }
     //moves arm to score on level 2
     public void armL2() {
-      armClosedLoopController.setReference(L2Position, SparkMax.ControlType.kPosition);
-      // wristClosedLoopController.setReference(0.93, SparkMax.ControlType.kPosition);
+      armClosedLoopController.setReference(L2Position, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
+      wristClosedLoopController.setReference(0.31, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
 
     }
     //moves arm to score on level 3
     public void armL3() {
-      armClosedLoopController.setReference(L3Position, SparkMax.ControlType.kPosition);
+      armClosedLoopController.setReference(L3Position, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
+      wristClosedLoopController.setReference(0.42, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
     }
     //moves arm to score on level 4
     public void armL4() {
@@ -127,15 +133,17 @@ public class CoralIntake extends SubsystemBase {
     }
     //moves arm to a position where it is safe to travel across the field
     public void armSafe() {
-      armClosedLoopController.setReference(safePosition, SparkMax.ControlType.kPosition);
+      armClosedLoopController.setReference(safePosition, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
+      wristClosedLoopController.setReference(0.23, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
+    }
+
+    public void armIntake() {
+      armClosedLoopController.setReference(intakePosition, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
+      wristClosedLoopController.setReference(0.38, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
     }
     //stops all arm movement
     public void stopIntake() {
       m_intakeArm2.set(0);
-    }
-    
-    public void wristTest() {
-      wristClosedLoopController.setReference(0.35, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
     }
 
     /* Functions for various wrist movements: */
@@ -157,11 +165,30 @@ public class CoralIntake extends SubsystemBase {
       m_intakeWrist.set(0);
     }
     //moves wheels for intake
-    public void wheelMove() {
-      m_intakeWheels.set(0.25);
+    public void wheelIn(double rightTrig) {
+      if (rightTrig != 0) {
+        rightManualMode = true;
+        m_intakeWheels.set(0.25 * rightTrig);
+      } else if (rightManualMode == true && rightTrig == 0) {
+        m_intakeWheels.set(0);
+        rightManualMode = false;
+      }
     }
     //moves wheels for outake
-    public void wheelRev() {
+    public void wheelOut(double leftTrig) {
+      if (leftTrig != 0) {
+        leftManualMode = true;
+        m_intakeWheels.set(-0.1 * leftTrig);
+      } else if (leftManualMode == true && leftTrig ==0) {
+        m_intakeWheels.set(0);
+        leftManualMode = false;
+      }
+    }
+    //moves wheels for outake
+    public void wheelOutTest(double speedValue) {
+      m_intakeWheels.set(-speedValue);
+    }
+    public void wheelOutFast() {
       m_intakeWheels.set(-1.0);
     }
     //stops all wheel movement

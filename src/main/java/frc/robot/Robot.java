@@ -138,6 +138,7 @@ public class Robot extends TimedRobot {
 
 		SmartDashboard.putNumber("Arm Position", m_robotContainer.intake.armEncoder.getPosition());
 		SmartDashboard.putNumber("Wrist Position", m_robotContainer.intake.wristEncoder.getPosition());
+		SmartDashboard.putNumber("Outake Speed", m_robotContainer.speedvalue);
 
 		/* Display 6-axis Processed Angle Data                                      */
 		// SmartDashboard.putBoolean(  "IMU_Connected",        m_robotContainer.getDrivetrain().getImu().isConnected());

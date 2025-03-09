@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.XboxController;
 //import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-// import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -101,6 +101,7 @@ public class RobotContainer {
 	public final AddressableLEDBuffer LED_StripBuffer = new AddressableLEDBuffer(8);
 	public final CoralIntakeMovement intakeMove = new CoralIntakeMovement(intake, intake.m_LED, LED_StripBuffer);
 	public double speedMult = 1;
+	public double speedvalue = 0.1;
 
 	// misc
 
@@ -168,7 +169,9 @@ public class RobotContainer {
 					-MathUtil.applyDeadband(joyMain.getRightX() * speedMult, JOYSTICK_AXIS_THRESHOLD),
 					fieldRelative, true, 
 					MathUtil.applyDeadband(copilotGamepad.getLeftY(), JOYSTICK_AXIS_THRESHOLD), 
-					MathUtil.applyDeadband(copilotGamepad.getRightY(), JOYSTICK_AXIS_THRESHOLD)),
+					MathUtil.applyDeadband(copilotGamepad.getRightY(), JOYSTICK_AXIS_THRESHOLD),
+					MathUtil.applyDeadband(joyMain.getLeftTriggerAxis(), JOYSTICK_AXIS_THRESHOLD),
+					MathUtil.applyDeadband(joyMain.getRightTriggerAxis(), JOYSTICK_AXIS_THRESHOLD)),
 				drivetrain, intake));
 				
 		
@@ -192,11 +195,15 @@ public class RobotContainer {
 	 * {@link JoystickButton}.
 	 */
 
-	public void updateJoystick(double xSpeed, double ySpeed, double rot, Boolean fieldRelative, Boolean rateLimit, double leftYValue, double RightYValue) {
+	public void updateJoystick(double xSpeed, double ySpeed, double rot, Boolean fieldRelative, 
+	Boolean rateLimit, double leftYValue, double RightYValue, double leftTrig, double rightTrig) {
 		drivetrain.drive(xSpeed, ySpeed, rot, fieldRelative, rateLimit);
 		intake.armMove(leftYValue);
 		intake.wristMove(RightYValue);
+		intake.wheelOut(leftTrig);
+		intake.wheelIn(rightTrig);
 	}
+
 	public void toggleSpeed(){
 		slowMode = !slowMode;
 
@@ -224,16 +231,30 @@ public class RobotContainer {
 		}
 	}
 
+	public void speedIncrement() {
+		if (speedvalue < 1.0) {
+			speedvalue += 0.025;
+		} else {
+			speedvalue = 0.1;
+		}
+	}
+
 	private void configureButtonBindings() {
 
 		/*------------------ JoyMain ------------------*/
 
 		joyMain.start().onTrue(Commands.runOnce(() -> toggleRelative()));
 
-		joyMain.button(1).onTrue(Commands.runOnce(() -> intake.wheelMove())); //button:y
+		joyMain.button(1).onTrue(Commands.runOnce(() -> intake.wheelOutTest(speedvalue))); //button:a
 
-		joyMain.button(1).onFalse(Commands.runOnce(() -> intake.stopWheels())); //button:y
+		joyMain.button(1).onFalse(Commands.runOnce(() -> intake.stopWheels())); //button:a
 		
+		joyMain.button(3).onTrue(Commands.runOnce(() -> speedIncrement()));
+
+		joyMain.button(5).onTrue(Commands.runOnce(() -> intake.wheelOutFast())); //button:LB
+
+		joyMain.button(5).onFalse(Commands.runOnce(() -> intake.stopWheels())); //button:LB
+
 		joyMain.button(4).onTrue(new DrivetrainZeroHeading(drivetrain));	//button:y, resets the field to current robot direction for field-relative mode
 
 		/*------------------ Copilot ------------------*/
@@ -250,7 +271,7 @@ public class RobotContainer {
 
 		copilotGamepad.button(4).onFalse(Commands.runOnce(() -> climber.stopClimb()));
 
-		copilotGamepad.button(3).onTrue(Commands.runOnce(() -> intake.wristTest()));
+		copilotGamepad.button(3).onTrue(Commands.runOnce(() -> intake.armIntake()));
 
 		copilotGamepad.button(2).onTrue(Commands.runOnce(() -> climber.climbMoveRev()));
 
