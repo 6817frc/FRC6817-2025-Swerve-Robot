@@ -7,6 +7,10 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkRelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
+
+import static edu.wpi.first.units.Units.Value;
+
+import com.fasterxml.jackson.annotation.JsonIncludeProperties.Value;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -88,12 +92,12 @@ public class CoralIntake extends SubsystemBase {
     double value = SmartDashboard.getNumber("PValue", 3);
     SmartDashboard.putNumber("PValue", value);
   }
-    double L1Position = 0.35; //TODO change to real value
+    double L1Position = 0.44; //TODO change to real value
     double L2Position = 0.27; 
-    double L3Position = 0.29; //wrist:0.43
+    double L3Position = 0.30; //wrist:0.43
     double L4Position = 0.35; //TODO change to real value //wwrist:
     double safePosition = 0.51; //wrist:0.23
-    double intakePosition = 0.28; //wrist:0.38
+    double intakePosition = 0.32; //wrist:0.38
     boolean armManualMode = false;
     boolean wristManualMode = false;
     boolean leftManualMode = false;
@@ -115,6 +119,7 @@ public class CoralIntake extends SubsystemBase {
     //moves arm to to score on level 1
     public void armL1() {
       armClosedLoopController.setReference(L1Position, SparkMax.ControlType.kPosition);
+      wristClosedLoopController.setReference(0.58, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
     }
     //moves arm to score on level 2
     public void armL2() {
@@ -125,7 +130,7 @@ public class CoralIntake extends SubsystemBase {
     //moves arm to score on level 3
     public void armL3() {
       armClosedLoopController.setReference(L3Position, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
-      wristClosedLoopController.setReference(0.42, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
+      wristClosedLoopController.setReference(0.40, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
     }
     //moves arm to score on level 4
     public void armL4() {
@@ -139,7 +144,7 @@ public class CoralIntake extends SubsystemBase {
 
     public void armIntake() {
       armClosedLoopController.setReference(intakePosition, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
-      wristClosedLoopController.setReference(0.38, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
+      wristClosedLoopController.setReference(0.76, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
     }
     //stops all arm movement
     public void stopIntake() {
