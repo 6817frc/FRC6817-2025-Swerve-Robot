@@ -93,11 +93,11 @@ public class CoralIntake extends SubsystemBase {
     SmartDashboard.putNumber("PValue", value);
   }
     double L1Position = 0.44; //TODO change to real value
-    double L2Position = 0.27; 
+    double L2Position = 0.32; //wrist:0.30
     double L3Position = 0.30; //wrist:0.43
     double L4Position = 0.35; //TODO change to real value //wwrist:
     double safePosition = 0.51; //wrist:0.23
-    double intakePosition = 0.32; //wrist:0.38
+    double intakePosition = 0.30; //wrist:0.37
     boolean armManualMode = false;
     boolean wristManualMode = false;
     boolean leftManualMode = false;
@@ -128,7 +128,7 @@ public class CoralIntake extends SubsystemBase {
     //moves arm to score on level 2
     public void armL2() {
       armClosedLoopController.setReference(L2Position, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
-      wristClosedLoopController.setReference(0.31, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
+      wristClosedLoopController.setReference(0.30, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
 
     }
     //moves arm to score on level 3
@@ -145,10 +145,10 @@ public class CoralIntake extends SubsystemBase {
       armClosedLoopController.setReference(safePosition, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
       wristClosedLoopController.setReference(0.23, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
     }
-
+//intake from Human Player Station
     public void armIntake() {
       armClosedLoopController.setReference(intakePosition, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
-      wristClosedLoopController.setReference(0.76, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
+      wristClosedLoopController.setReference(0.37, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
     }
     //stops all arm movement
     public void stopIntake() {
