@@ -211,7 +211,7 @@ double kMaxSpeed = 3.0;
     // if it is too high, the robot will oscillate around.
     // if it is too low, the robot will never reach its target
     // if the robot never turns in the correct direction, kP should be inverted.
-    double kP = .035;
+    double kP = .1;
 
     // tx ranges from (-hfov/2) to (hfov/2) in degrees. If your target is on the rightmost edge of 
     // your limelight 3 feed, tx should return roughly 31 degrees.
@@ -242,7 +242,7 @@ double kMaxSpeed = 3.0;
 	Boolean rateLimit, double leftYValue, double RightYValue, double leftTrig, double rightTrig) {
 
 // while the B-button is pressed, overwrite some of the driving values with the output of our limelight methods
-		if (cameraTargetingMode = true) {
+		if (cameraTargetingMode == true) {
 			final var side_limelight = limelight_aim_proportional();
       		ySpeed = side_limelight;
 
@@ -251,9 +251,8 @@ double kMaxSpeed = 3.0;
 
         	//while using Limelight, turn off field-relative driving.
         	fieldRelative = false;
-		} else {
-			drivetrain.drive(xSpeed, ySpeed, rot, fieldRelative, rateLimit);
 		}
+		drivetrain.drive(xSpeed, ySpeed, rot, fieldRelative, rateLimit);
 		intake.armMove(leftYValue);
 		intake.wristMove(RightYValue);
 		intake.wheelOut(leftTrig);
