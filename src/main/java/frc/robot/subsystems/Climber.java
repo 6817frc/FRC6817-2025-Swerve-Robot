@@ -44,11 +44,11 @@ public class Climber extends SubsystemBase {
   }
 
   public void climbMove() {
-    m_climb.set(0.05);
+    m_climb.set(0.1);
   }
 
   public void climbMoveRev() {
-    m_climb.set(-0.05);
+    m_climb.set(-0.1);
   }
 
   public void stopClimb() {

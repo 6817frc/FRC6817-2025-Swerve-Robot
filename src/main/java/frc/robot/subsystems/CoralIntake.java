@@ -159,13 +159,17 @@ public class CoralIntake extends SubsystemBase {
 
     //moves wrist using joystick input
     public void wristMove(double RightYValue) {
-      if (RightYValue != 0) {
+      if (wristEncoder.getPosition() > 0.57 && armEncoder.getPosition() <= 0.20) {
+        wristClosedLoopController.setReference(0.55, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
+      } else {
+        if (RightYValue != 0) {
         wristManualMode = true;
         wristClosedLoopController.setReference(0.5 * RightYValue, SparkMax.ControlType.kVelocity, ClosedLoopSlot.kSlot1);
-      } else if (wristManualMode == true && RightYValue == 0) {
+        } else if (wristManualMode == true && RightYValue == 0) {
         wristClosedLoopController.setReference(0.0, SparkMax.ControlType.kVelocity, ClosedLoopSlot.kSlot1);
         wristClosedLoopController.setReference(wristEncoder.getPosition(), SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
         wristManualMode = false;
+        }
       }
     }
 
