@@ -107,13 +107,17 @@ public class CoralIntake extends SubsystemBase {
 
     //moves arm based on joystick input
     public void armMove(double LeftYValue) {
-      if (LeftYValue != 0) {
+      if(armEncoder.getPosition() > 0.196) {
+        if (LeftYValue != 0) {
         armManualMode = true;
         armClosedLoopController.setReference(0.3 * LeftYValue, SparkMax.ControlType.kVelocity, ClosedLoopSlot.kSlot1);
-      } else if (armManualMode == true && LeftYValue == 0) {
+        } else if (armManualMode == true && LeftYValue == 0) {
         armClosedLoopController.setReference(0.0, SparkMax.ControlType.kVelocity, ClosedLoopSlot.kSlot1);
         armClosedLoopController.setReference(armEncoder.getPosition(), SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
         armManualMode = false;
+        }
+      } else {
+        armClosedLoopController.setReference(0.2, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
       }
     }
     //moves arm to to score on level 1
