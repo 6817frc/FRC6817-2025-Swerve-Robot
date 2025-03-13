@@ -170,8 +170,8 @@ public class RobotContainer {
 					fieldRelative, true, 
 					MathUtil.applyDeadband(copilotGamepad.getLeftY(), JOYSTICK_AXIS_THRESHOLD), 
 					MathUtil.applyDeadband(copilotGamepad.getRightY(), JOYSTICK_AXIS_THRESHOLD),
-					MathUtil.applyDeadband(joyMain.getLeftTriggerAxis(), JOYSTICK_AXIS_THRESHOLD),
-					MathUtil.applyDeadband(joyMain.getRightTriggerAxis(), JOYSTICK_AXIS_THRESHOLD)),
+					MathUtil.applyDeadband(joyMain.getRightTriggerAxis(), JOYSTICK_AXIS_THRESHOLD),
+					MathUtil.applyDeadband(joyMain.getLeftTriggerAxis(), JOYSTICK_AXIS_THRESHOLD)),
 				drivetrain, intake));
 				
 		
@@ -251,9 +251,9 @@ public class RobotContainer {
 		
 		joyMain.button(3).onTrue(Commands.runOnce(() -> speedIncrement()));
 
-		joyMain.button(5).onTrue(Commands.runOnce(() -> intake.wheelOutFast())); //button:LB
+		joyMain.button(6).onTrue(Commands.runOnce(() -> intake.wheelOutFast())); //button:RB
 
-		joyMain.button(5).onFalse(Commands.runOnce(() -> intake.stopWheels())); //button:LB
+		joyMain.button(6).onFalse(Commands.runOnce(() -> intake.stopWheels())); //button:RB
 
 		joyMain.button(4).onTrue(new DrivetrainZeroHeading(drivetrain));	//button:y, resets the field to current robot direction for field-relative mode
 
