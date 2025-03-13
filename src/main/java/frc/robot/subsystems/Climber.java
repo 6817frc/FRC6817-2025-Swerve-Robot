@@ -43,12 +43,12 @@ public class Climber extends SubsystemBase {
     // m_climbBack.follow(m_climbFront); // TODO check whether this needs to be used
   }
 
-  public void climbMove() {
-    m_climb.set(0.35);
+  public void climbMove(double coLeftTrig) {
+    m_climb.set(coLeftTrig); //set speed:0.35
   }
 
-  public void climbMoveRev() {
-    m_climb.set(-0.35);
+  public void climbMoveRev(double coRightTrig) {
+    m_climb.set(coRightTrig); //set speed:-0.35
   }
 
   public void stopClimb() {
