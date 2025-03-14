@@ -280,6 +280,8 @@ public class RobotContainer {
 
 		copilotGamepad.button(3).onTrue(Commands.runOnce(() -> intake.armIntake()));
 
+		copilotGamepad.button(2).onTrue(l2Command);
+
 		// copilotGamepad.button(2).onTrue(Commands.runOnce(() -> climber.climbMoveRev()));
 
 		// copilotGamepad.button(2).onFalse(Commands.runOnce(() -> climber.stopClimb()));
