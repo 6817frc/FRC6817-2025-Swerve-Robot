@@ -38,6 +38,7 @@ import frc.robot.subsystems.Climber;
 import frc.robot.commands.drivetrain.*;
 import frc.robot.commands.groups.*;
 import frc.robot.commands.intake.CoralIntakeMovement;
+import frc.robot.commands.intake.IntakeL2;
 //import frc.robot.commands.gamepad.*;
 import frc.robot.auton.common.*;
 
@@ -100,6 +101,7 @@ public class RobotContainer {
 	// public final AddressableLED LED_Strip = new AddressableLED(Ports.PWM.LED_STRIP);
 	public final AddressableLEDBuffer LED_StripBuffer = new AddressableLEDBuffer(8);
 	public final CoralIntakeMovement intakeMove = new CoralIntakeMovement(intake, intake.m_LED, LED_StripBuffer);
+	public final IntakeL2 l2Command = new IntakeL2(intake);
 	public double speedMult = 1;
 	public double speedvalue = 0.1;
 
@@ -120,6 +122,7 @@ public class RobotContainer {
 	public RobotContainer() {
 
 		NamedCommands.registerCommand("lightOn", intakeMove);
+		NamedCommands.registerCommand("L2pos", l2Command);
 
 		// choosers (for auton)
 		autonChooser.setDefaultOption("Do Nothing", AUTON_DO_NOTHING);

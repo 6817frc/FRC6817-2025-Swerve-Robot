@@ -92,6 +92,7 @@ public class CoralIntake extends SubsystemBase {
     double value = SmartDashboard.getNumber("PValue", 3);
     SmartDashboard.putNumber("PValue", value);
   }
+    //starting positions: arm=0.37, wrist=0.98
     double L1Position = 0.44; //TODO change to real value
     double L2Position = 0.32; //wrist:0.30
     double L3Position = 0.30; //wrist:0.43

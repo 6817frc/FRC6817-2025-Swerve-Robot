@@ -27,7 +27,7 @@ public class IntakeL2 extends InstantCommand {
   }  
 
   public void isPosition() {
-    if () {
+    if (intake.armEncoder.getPosition() >= 0.31 && intake.wristEncoder.getPosition() <= 0.31) {
       inPosition = true;
     } else {
       inPosition = false;
@@ -45,7 +45,7 @@ public class IntakeL2 extends InstantCommand {
 
   @Override
   public boolean isFinished() {
-    if () {
+    if (inPosition == true) {
       return true;
     } else {
       return false;
