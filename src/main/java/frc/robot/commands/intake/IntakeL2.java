@@ -24,6 +24,7 @@ public class IntakeL2 extends InstantCommand {
 
   public IntakeL2(CoralIntake intake) {
     // Use addRequirements() here to declare subsystem dependencies.
+    this.intake = intake;
     addRequirements(intake);
   }  
 
