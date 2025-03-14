@@ -25,6 +25,8 @@ public class Climber extends SubsystemBase {
   private double frontEncoderOffset;
   private double backEncoderOffset;
   private double realMotorPos;
+  private boolean leftManualMode;
+  private boolean RightManualMode;
 
   /** Creates a new Climber. */
   public Climber() {
@@ -43,12 +45,26 @@ public class Climber extends SubsystemBase {
     // m_climbBack.follow(m_climbFront); // TODO check whether this needs to be used
   }
 
-  public void climbMove() {
-    m_climb.set(0.35);
+  public void climbMove(double coLeftTrig) {
+    //set speed:0.35
+    if (coLeftTrig != 0) {
+      leftManualMode = true;
+      m_climb.set(coLeftTrig);
+    } else if (leftManualMode == true && coLeftTrig ==0) {
+      m_climb.set(0);
+      leftManualMode = false;
+    }
   }
 
-  public void climbMoveRev() {
-    m_climb.set(-0.35);
+  public void climbMoveRev(double coRightTrig) {
+    //set speed:-0.35
+    if (coRightTrig != 0) {
+      RightManualMode = true;
+      m_climb.set(-coRightTrig);
+    } else if (RightManualMode == true && coRightTrig ==0) {
+      m_climb.set(0);
+      RightManualMode = false;
+    }
   }
 
   public void stopClimb() {

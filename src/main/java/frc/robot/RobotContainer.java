@@ -170,9 +170,11 @@ public class RobotContainer {
 					fieldRelative, true, 
 					MathUtil.applyDeadband(copilotGamepad.getLeftY(), JOYSTICK_AXIS_THRESHOLD), 
 					MathUtil.applyDeadband(copilotGamepad.getRightY(), JOYSTICK_AXIS_THRESHOLD),
+					MathUtil.applyDeadband(joyMain.getRightTriggerAxis(), JOYSTICK_AXIS_THRESHOLD),
 					MathUtil.applyDeadband(joyMain.getLeftTriggerAxis(), JOYSTICK_AXIS_THRESHOLD),
-					MathUtil.applyDeadband(joyMain.getRightTriggerAxis(), JOYSTICK_AXIS_THRESHOLD)),
-				drivetrain, intake));
+					MathUtil.applyDeadband(copilotGamepad.getLeftTriggerAxis(), JOYSTICK_AXIS_THRESHOLD),
+					MathUtil.applyDeadband(copilotGamepad.getRightTriggerAxis(), JOYSTICK_AXIS_THRESHOLD)),
+				drivetrain, intake, climber));
 				
 		
 		// Basic targeting data
@@ -239,7 +241,7 @@ double kMaxSpeed = 3.0;
   }
 
 	public void updateJoystick(double xSpeed, double ySpeed, double rot, Boolean fieldRelative, 
-	Boolean rateLimit, double leftYValue, double RightYValue, double leftTrig, double rightTrig) {
+	Boolean rateLimit, double leftYValue, double RightYValue, double leftTrig, double rightTrig, double coLeftTrig, double coRightTrig) {
 
 // while the B-button is pressed, overwrite some of the driving values with the output of our limelight methods
 		if (cameraTargetingMode == true) {
@@ -252,11 +254,14 @@ double kMaxSpeed = 3.0;
         	//while using Limelight, turn off field-relative driving.
         	fieldRelative = false;
 		}
+
 		drivetrain.drive(xSpeed, ySpeed, rot, fieldRelative, rateLimit);
 		intake.armMove(leftYValue);
 		intake.wristMove(RightYValue);
 		intake.wheelOut(leftTrig);
 		intake.wheelIn(rightTrig);
+		climber.climbMove(coLeftTrig);
+		climber.climbMoveRev(coRightTrig);
 	}
 
 	public void toggleSpeed(){
@@ -318,9 +323,9 @@ double kMaxSpeed = 3.0;
 		
 		joyMain.button(3).onTrue(Commands.runOnce(() -> speedIncrement()));
 
-		joyMain.button(5).onTrue(Commands.runOnce(() -> intake.wheelOutFast())); //button:LB
+		joyMain.button(6).onTrue(Commands.runOnce(() -> intake.wheelOutFast())); //button:RB
 
-		joyMain.button(5).onFalse(Commands.runOnce(() -> intake.stopWheels())); //button:LB
+		joyMain.button(6).onFalse(Commands.runOnce(() -> intake.stopWheels())); //button:RB
 
 		joyMain.button(4).onTrue(new DrivetrainZeroHeading(drivetrain));	//button:y, resets the field to current robot direction for field-relative mode
 
@@ -334,15 +339,15 @@ double kMaxSpeed = 3.0;
 
 		copilotGamepad.povRight().onTrue(Commands.runOnce(() -> intake.armL4()));
 
-		copilotGamepad.button(4).onTrue(Commands.runOnce(() -> climber.climbMove()));
+		// copilotGamepad.button(4).onTrue(Commands.runOnce(() -> climber.climbMove()));
 
-		copilotGamepad.button(4).onFalse(Commands.runOnce(() -> climber.stopClimb()));
+		// copilotGamepad.button(4).onFalse(Commands.runOnce(() -> climber.stopClimb()));
 
 		copilotGamepad.button(3).onTrue(Commands.runOnce(() -> intake.armIntake()));
 
-		copilotGamepad.button(2).onTrue(Commands.runOnce(() -> climber.climbMoveRev()));
+		// copilotGamepad.button(2).onTrue(Commands.runOnce(() -> climber.climbMoveRev()));
 
-		copilotGamepad.button(2).onFalse(Commands.runOnce(() -> climber.stopClimb()));
+		// copilotGamepad.button(2).onFalse(Commands.runOnce(() -> climber.stopClimb()));
 
 		copilotGamepad.button(1).onTrue(Commands.runOnce(() -> intake.armSafe()));
 	}
