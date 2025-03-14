@@ -46,7 +46,7 @@ public class Climber extends SubsystemBase {
   }
 
   public void climbMove(double coLeftTrig) {
-    m_climb.set(coLeftTrig); //set speed:0.35
+    //set speed:0.35
     if (coLeftTrig != 0) {
       RightManualMode = true;
       m_climb.set(coLeftTrig);
