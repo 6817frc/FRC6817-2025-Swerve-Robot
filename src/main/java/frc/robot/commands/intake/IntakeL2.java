@@ -41,6 +41,7 @@ public class IntakeL2 extends InstantCommand {
   @Override
   public void execute() {
     intake.armL2();
+    isPosition();
   }
 
   @Override
