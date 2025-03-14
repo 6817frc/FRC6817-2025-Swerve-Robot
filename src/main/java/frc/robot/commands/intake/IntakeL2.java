@@ -5,7 +5,7 @@
 package frc.robot.commands.intake;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CoralIntake;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -13,12 +13,12 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class IntakeL2 extends InstantCommand {
+public class IntakeL2 extends Command {
 
   public CoralIntake intake;
   public AddressableLED m_LED;
   public AddressableLEDBuffer m_LedBuffer;
-  public boolean inPosition;
+  public boolean inPosition = false;
   public double deadband = 0.01;
   private int timer = 0;
 
