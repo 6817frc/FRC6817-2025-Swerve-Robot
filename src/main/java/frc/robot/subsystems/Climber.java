@@ -60,7 +60,7 @@ public class Climber extends SubsystemBase {
     //set speed:-0.35
     if (coRightTrig != 0) {
       RightManualMode = true;
-      m_climb.set(coRightTrig);
+      m_climb.set(-coRightTrig);
     } else if (RightManualMode == true && coRightTrig ==0) {
       m_climb.set(0);
       RightManualMode = false;
