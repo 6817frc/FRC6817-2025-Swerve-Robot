@@ -20,6 +20,7 @@ public class IntakeL2 extends InstantCommand {
   public AddressableLEDBuffer m_LedBuffer;
   public boolean inPosition;
   public double deadband = 0.01;
+  private int timer = 0;
 
   public IntakeL2(CoralIntake intake) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -33,6 +34,16 @@ public class IntakeL2 extends InstantCommand {
       inPosition = false;
     }
   }
+
+  public void dropCoral() {
+    if (inPosition == true && timer < 2) {
+      intake.m_intakeWheels.set(-0.2);
+      timer++;
+    } else {
+      intake.m_intakeWheels.set(0);
+    }
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
@@ -42,6 +53,7 @@ public class IntakeL2 extends InstantCommand {
   public void execute() {
     intake.armL2();
     isPosition();
+    dropCoral();
   }
 
   @Override
