@@ -26,14 +26,13 @@ public class IntakeL2 extends InstantCommand {
     addRequirements(intake);
   }  
 
-  // public void isPosition() {
-  //   if () {
-
-  //     inPosition = true
-  //   } else {
-  //     inPosition = false;
-  //   }
-  // }
+  public void isPosition() {
+    if () {
+      inPosition = true;
+    } else {
+      inPosition = false;
+    }
+  }
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
@@ -44,14 +43,14 @@ public class IntakeL2 extends InstantCommand {
     intake.armL2();
   }
 
-  // @Override
-  // public boolean isFinished() {
-  //   if () {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
+  @Override
+  public boolean isFinished() {
+    if () {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   @Override
   public void end(boolean interrupted) {
