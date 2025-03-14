@@ -5,29 +5,19 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-//import edu.wpi.first.math.controller.PIDController;
-//import edu.wpi.first.math.controller.ProfiledPIDController;
-//import edu.wpi.first.math.geometry.Pose2d;
-//import edu.wpi.first.math.geometry.Rotation2d;
-//import edu.wpi.first.math.geometry.Translation2d;
-//import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 //import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-// import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 // import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 //import edu.wpi.first.wpilibj.XboxController.Button;
-//import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-// import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-//import edu.wpi.first.wpilibj2.command.InstantCommand;
-//import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -42,16 +32,9 @@ import frc.robot.Constants.DrivetrainConstants;
 
 import frc.robot.sensors.*;
 
-/*import frc.robot.interfaces.IElevator;
-import frc.robot.interfaces.IDrawer;
-import frc.robot.interfaces.INeck;
-import frc.robot.interfaces.IRoller;*/
-
 import frc.robot.subsystems.SwerveDrivetrain;
 import frc.robot.subsystems.CoralIntake;
 import frc.robot.subsystems.Climber;
-// import frc.robot.commands.climber.Elevator;
-// import frc.robot.commands.climber.ElevatorUp;
 import frc.robot.commands.drivetrain.*;
 import frc.robot.commands.groups.*;
 import frc.robot.commands.intake.CoralIntakeMovement;
@@ -118,6 +101,7 @@ public class RobotContainer {
 	public final AddressableLEDBuffer LED_StripBuffer = new AddressableLEDBuffer(8);
 	public final CoralIntakeMovement intakeMove = new CoralIntakeMovement(intake, intake.m_LED, LED_StripBuffer);
 	public double speedMult = 1;
+	public double speedvalue = 0.1;
 
 	// misc
 
@@ -179,12 +163,19 @@ public class RobotContainer {
 			// We are inverting LeftX because we want a positive value when we pull to the left. Xbox controllers return positive values when you pull to the right by default.
 			// We are also inverting RightX because we want a positive value when we pull to the left (CCW is positive in mathematics).
 			new RunCommand(
-				() -> drivetrain.drive(
+				() -> updateJoystick(
 					-MathUtil.applyDeadband(joyMain.getLeftY() * speedMult, JOYSTICK_AXIS_THRESHOLD),
 					-MathUtil.applyDeadband(joyMain.getLeftX() * speedMult, JOYSTICK_AXIS_THRESHOLD),
 					-MathUtil.applyDeadband(joyMain.getRightX() * speedMult, JOYSTICK_AXIS_THRESHOLD),
-					fieldRelative, true),
-				drivetrain));
+					fieldRelative, true, 
+					MathUtil.applyDeadband(copilotGamepad.getLeftY(), JOYSTICK_AXIS_THRESHOLD), 
+					MathUtil.applyDeadband(copilotGamepad.getRightY(), JOYSTICK_AXIS_THRESHOLD),
+					MathUtil.applyDeadband(joyMain.getRightTriggerAxis(), JOYSTICK_AXIS_THRESHOLD),
+					MathUtil.applyDeadband(joyMain.getLeftTriggerAxis(), JOYSTICK_AXIS_THRESHOLD),
+					MathUtil.applyDeadband(copilotGamepad.getLeftTriggerAxis(), JOYSTICK_AXIS_THRESHOLD),
+					MathUtil.applyDeadband(copilotGamepad.getRightTriggerAxis(), JOYSTICK_AXIS_THRESHOLD)),
+				drivetrain, intake, climber));
+				
 		
 		// Basic targeting data
 		double tx = LimelightHelpers.getTX("");  // Horizontal offset from crosshair to target in degrees
@@ -205,6 +196,17 @@ public class RobotContainer {
 	 * passing it to a
 	 * {@link JoystickButton}.
 	 */
+
+	public void updateJoystick(double xSpeed, double ySpeed, double rot, Boolean fieldRelative, 
+	Boolean rateLimit, double leftYValue, double RightYValue, double leftTrig, double rightTrig, double coLeftTrig, double coRightTrig) {
+		drivetrain.drive(xSpeed, ySpeed, rot, fieldRelative, rateLimit);
+		intake.armMove(leftYValue);
+		intake.wristMove(RightYValue);
+		intake.wheelOut(leftTrig);
+		intake.wheelIn(rightTrig);
+		climber.climbMove(coLeftTrig);
+		climber.climbMoveRev(coRightTrig);
+	}
 
 	public void toggleSpeed(){
 		slowMode = !slowMode;
@@ -233,49 +235,53 @@ public class RobotContainer {
 		}
 	}
 
+	public void speedIncrement() {
+		if (speedvalue < 1.0) {
+			speedvalue += 0.025;
+		} else {
+			speedvalue = 0.1;
+		}
+	}
+
 	private void configureButtonBindings() {
 
 		/*------------------ JoyMain ------------------*/
 
-		joyMain.button(5).onTrue(Commands.runOnce(() -> intakeMove.execute())); //command test :button:LB
-
-		joyMain.button(6).onTrue(Commands.runOnce(() -> toggleSpeed())); //button:RB
-
 		joyMain.start().onTrue(Commands.runOnce(() -> toggleRelative()));
 
-		joyMain.button(1).whileTrue(Commands.runOnce(() -> intake.moveTest())); //button:a
+		joyMain.button(1).onTrue(Commands.runOnce(() -> intake.wheelOutTest(speedvalue))); //button:a
 
-		joyMain.button(2).whileTrue(Commands.runOnce(() -> climber.moveTest2())); //button:b
+		joyMain.button(1).onFalse(Commands.runOnce(() -> intake.stopWheels())); //button:a
+		
+		joyMain.button(3).onTrue(Commands.runOnce(() -> speedIncrement()));
 
-		// joyMain.button(5).onTrue(Commands.runOnce(() -> climber.moveUp())); //button:LB
+		joyMain.button(6).onTrue(Commands.runOnce(() -> intake.wheelOutFast())); //button:RB
 
-		// joyMain.povUp().onTrue(Commands.runOnce(() -> climber.moveUptoPos())); 
-
-		// joyMain.povDown().onTrue(Commands.runOnce(() -> climber.moveDown()));
-
-		// joyMain.button(1).onTrue(Commands.runOnce(() -> climber.resetClimbEncoder())); //button:a
-
-		// joyMain.button(2).onTrue(Commands.runOnce(() -> climber.stopClimb())); //button:b
+		joyMain.button(6).onFalse(Commands.runOnce(() -> intake.stopWheels())); //button:RB
 
 		joyMain.button(4).onTrue(new DrivetrainZeroHeading(drivetrain));	//button:y, resets the field to current robot direction for field-relative mode
 
 		/*------------------ Copilot ------------------*/
 
-		// copilotGamepad.povUp().onTrue(Commands.runOnce(() -> intake.moveUptoPos()));
+		copilotGamepad.povDown().onTrue(Commands.runOnce(() -> intake.armL1()));
 
-		// copilotGamepad.povDown().onTrue(Commands.runOnce(() -> intake.moveDowntoPos()));
+		copilotGamepad.povLeft().onTrue(Commands.runOnce(() -> intake.armL2()));
 
-		// copilotGamepad.back().onTrue(Commands.runOnce(() -> intake.stopEverything()));
+		copilotGamepad.povUp().onTrue(Commands.runOnce(() -> intake.armL3()));
 
-		// copilotGamepad.button(5).onTrue(Commands.runOnce(() -> intake.moveUp())); //button:LB
+		copilotGamepad.povRight().onTrue(Commands.runOnce(() -> intake.armL4()));
 
-		// copilotGamepad.button(6).onTrue(Commands.runOnce(() -> intake.moveDown())); //button:RB
+		// copilotGamepad.button(4).onTrue(Commands.runOnce(() -> climber.climbMove()));
 
-		// copilotGamepad.button(3).onTrue(Commands.runOnce(() -> intake.grabNote())); //button:x
+		// copilotGamepad.button(4).onFalse(Commands.runOnce(() -> climber.stopClimb()));
 
-		// copilotGamepad.button(2).onTrue(Commands.runOnce(() -> intake.dropNote())); //button:b
+		copilotGamepad.button(3).onTrue(Commands.runOnce(() -> intake.armIntake()));
 
-		// copilotGamepad.button(4).onTrue(Commands.runOnce(() -> intake.resetArmEncoder())); //button:y
+		// copilotGamepad.button(2).onTrue(Commands.runOnce(() -> climber.climbMoveRev()));
+
+		// copilotGamepad.button(2).onFalse(Commands.runOnce(() -> climber.stopClimb()));
+
+		copilotGamepad.button(1).onTrue(Commands.runOnce(() -> intake.armSafe()));
 	}
 
 	/**
