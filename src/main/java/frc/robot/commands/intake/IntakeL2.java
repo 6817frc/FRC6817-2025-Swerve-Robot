@@ -18,9 +18,9 @@ public class IntakeL2 extends Command {
   public CoralIntake intake;
   public AddressableLED m_LED;
   public AddressableLEDBuffer m_LedBuffer;
-  public boolean inPosition = false;
-  public double deadband = 0.01;
-  private int timer = 0;
+  public boolean inPosition;
+  public double deadband;
+  private int timer;
 
   public IntakeL2(CoralIntake intake) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -29,10 +29,8 @@ public class IntakeL2 extends Command {
   }  
 
   public void isPosition() {
-    if (intake.armEncoder.getPosition() <= 0.31 && intake.wristEncoder.getPosition() <= 0.31) {
+    if (intake.armEncoder.getPosition() <= 0.33 && intake.wristEncoder.getPosition() <= 0.31) {
       inPosition = true;
-    } else {
-      inPosition = false;
     }
   }
 
@@ -48,6 +46,9 @@ public class IntakeL2 extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    inPosition = false;
+    deadband = 0.01;
+    timer = 0;
   }
 
   @Override
