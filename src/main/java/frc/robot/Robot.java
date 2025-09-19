@@ -155,6 +155,7 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putString("Start position", m_robotContainer.getStartPositionChooser().getSelected());
 
 		SmartDashboard.putNumber("Command Run", m_robotContainer.l2Command.testNumber);
+		SmartDashboard.putNumber("Times Excecute is run", m_robotContainer.l2Command.timesRun);
 
 		// SmartDashboard.putNumber("SetPoint", rotations);
 		// SmartDashboard.putNumber("P", m_robotContainer.intake.armPID.getP()); //TODO maybe add armPID and check values

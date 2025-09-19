@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Ports;
 
 public class Climber extends SubsystemBase {
-  public final SparkMax m_climb;
+  // public final SparkMax m_climb;
   // public final RelativeEncoder frontEncoder;
   // public final RelativeEncoder backEncoder;
   // private final DigitalInput limitSwitch = new DigitalInput(1);
@@ -30,13 +30,13 @@ public class Climber extends SubsystemBase {
 
   /** Creates a new Climber. */
   public Climber() {
-    m_climb = new SparkMax(Ports.CAN.Climb, MotorType.kBrushless); //TODO update for new motors
-    SparkMaxConfig climbConfig = new SparkMaxConfig();
-    climbConfig.inverted(false).idleMode(IdleMode.kBrake);
-    double value = SmartDashboard.getNumber("climbPValue", 0.05);
-    SmartDashboard.putNumber("climbPValue", value);
+    // m_climb = new SparkMax(Ports.CAN.Climb, MotorType.kBrushless); //TODO update for new motors
+    // SparkMaxConfig climbConfig = new SparkMaxConfig();
+    // climbConfig.inverted(false).idleMode(IdleMode.kBrake);
+    // double value = SmartDashboard.getNumber("climbPValue", 0.05);
+    // SmartDashboard.putNumber("climbPValue", value);
 
-    m_climb.configure(climbConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    // m_climb.configure(climbConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
     // frontEncoder = m_climbFront.getEncoder(); //this was used last year
     // backEncoder = m_climbBack.getEncoder();
@@ -45,31 +45,31 @@ public class Climber extends SubsystemBase {
     // m_climbBack.follow(m_climbFront); // TODO check whether this needs to be used
   }
 
-  public void climbMove(double coLeftTrig) {
-    //set speed:0.35
-    if (coLeftTrig != 0) {
-      leftManualMode = true;
-      m_climb.set(coLeftTrig);
-    } else if (leftManualMode == true && coLeftTrig ==0) {
-      m_climb.set(0);
-      leftManualMode = false;
-    }
-  }
+  // public void climbMove(double coLeftTrig) {
+  //   //set speed:0.35
+  //   if (coLeftTrig != 0) {
+  //     leftManualMode = true;
+  //     m_climb.set(coLeftTrig);
+  //   } else if (leftManualMode == true && coLeftTrig ==0) {
+  //     m_climb.set(0);
+  //     leftManualMode = false;
+  //   }
+  // }
 
-  public void climbMoveRev(double coRightTrig) {
-    //set speed:-0.35
-    if (coRightTrig != 0) {
-      RightManualMode = true;
-      m_climb.set(-coRightTrig);
-    } else if (RightManualMode == true && coRightTrig ==0) {
-      m_climb.set(0);
-      RightManualMode = false;
-    }
-  }
+  // public void climbMoveRev(double coRightTrig) {
+  //   //set speed:-0.35
+  //   if (coRightTrig != 0) {
+  //     RightManualMode = true;
+  //     m_climb.set(-coRightTrig);
+  //   } else if (RightManualMode == true && coRightTrig ==0) {
+  //     m_climb.set(0);
+  //     RightManualMode = false;
+  //   }
+  // }
 
-  public void stopClimb() {
-    m_climb.set(0);
-  }
+  // public void stopClimb() {
+  //   m_climb.set(0);
+  // }
 
   @Override
   public void periodic() {

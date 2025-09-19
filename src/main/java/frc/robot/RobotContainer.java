@@ -207,8 +207,8 @@ public class RobotContainer {
 		intake.wristMove(RightYValue);
 		intake.wheelOut(leftTrig);
 		intake.wheelIn(rightTrig);
-		climber.climbMove(coLeftTrig);
-		climber.climbMoveRev(coRightTrig);
+		// climber.climbMove(coLeftTrig);
+		// climber.climbMoveRev(coRightTrig);
 	}
 
 	public void toggleSpeed(){

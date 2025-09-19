@@ -22,6 +22,7 @@ public class IntakeL2 extends Command {
   public double deadband;
   private int timer;
   public int testNumber;
+  public int timesRun;
 
   public IntakeL2(CoralIntake intake) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -51,19 +52,21 @@ public class IntakeL2 extends Command {
     deadband = 0.01;
     timer = 0;
     testNumber = 1;
-    intake.armL2();
+    timesRun = 0;
   }
 
   @Override
   public void execute() {
     testNumber = 2;
+    intake.armL2();
     isPosition();
     dropCoral();
+    timesRun++;
   }
 
   @Override
   public boolean isFinished() {
-    if (inPosition == true) {
+    if (inPosition == true & timer >= 2) {
       testNumber = 3;
       return true;
     } else {
