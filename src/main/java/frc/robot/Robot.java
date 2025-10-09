@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.CoralIntake;
 
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.MathUtil;
@@ -44,7 +45,8 @@ public class Robot extends TimedRobot {
 
 		// Instantiate our RobotContainer. This will perform all our button bindings, and put our autonomous chooser on the dashboard.
 		m_robotContainer = new RobotContainer();
-		SmartDashboard.putData("Swerve Odometry", m_robotContainer.getField());		
+		SmartDashboard.putData("Swerve Odometry", m_robotContainer.getField());
+		FollowPathCommand.warmupCommand().schedule();
 	}
 
 	/*

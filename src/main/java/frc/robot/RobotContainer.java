@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 
 import com.pathplanner.lib.auto.NamedCommands;
@@ -66,6 +67,7 @@ public class RobotContainer {
 	
 	public static final String AUTON_DO_NOTHING = "Do Nothing";
 	public static final String AUTON_STRAIGHT_FORWARD = "Move Straight Forward";
+	public static final String AUTON_STRAIGHT_2 = "Straight 2";
 	public static final String AUTON_NEW_PATH = "New Path";
 	private String autonSelected;
 	private SendableChooser<String> autonChooser = new SendableChooser<>();
@@ -118,12 +120,10 @@ public class RobotContainer {
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
 	public RobotContainer() {
-
-		NamedCommands.registerCommand("lightOn", intakeMove);
-
 		// choosers (for auton)
 		autonChooser.setDefaultOption("Do Nothing", AUTON_DO_NOTHING);
 		autonChooser.addOption("Move Straight Forward", AUTON_STRAIGHT_FORWARD);
+		autonChooser.addOption("Straight 2", AUTON_STRAIGHT_2);
 		autonChooser.addOption("New Path", AUTON_NEW_PATH);
 		SmartDashboard.putData("Auto choices", autonChooser);
 
@@ -145,7 +145,7 @@ public class RobotContainer {
 
 
 		// Configure the button bindings
-
+		configureAutoCommands();
 		configureButtonBindings();
 
 
@@ -243,6 +243,13 @@ public class RobotContainer {
 		}
 	}
 
+	private void configureAutoCommands(){
+		NamedCommands.registerCommand("stop", new InstantCommand(()-> drivetrain.stop()));
+		NamedCommands.registerCommand("armL2", Commands.runOnce(()-> intake.armL2()));
+		NamedCommands.registerCommand("armSafe", Commands.runOnce(()-> intake.armSafe()));
+		NamedCommands.registerCommand("intakeOut", new InstantCommand(()-> intake.wheelOut(5)));
+	}
+
 	private void configureButtonBindings() {
 
 		/*------------------ JoyMain ------------------*/
@@ -315,6 +322,13 @@ public class RobotContainer {
 			case AUTON_DO_NOTHING:
 				return new PathPlannerAuto("Do Nothing");	
 				//break;
+			
+			case AUTON_STRAIGHT_2:
+				return new PathPlannerAuto("straight 2");
+
+			// case AUTON_Straight_And_turn:
+			// 	return new PathPlannerAuto("straight and turn");	
+			// 	//break;
 				
 			default:
 				// nothing
