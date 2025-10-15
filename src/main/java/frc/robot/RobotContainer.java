@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -67,7 +69,8 @@ public class RobotContainer {
 	
 	public static final String AUTON_DO_NOTHING = "Do Nothing";
 	public static final String AUTON_STRAIGHT_FORWARD = "Move Straight Forward";
-	public static final String AUTON_STRAIGHT_2 = "Straight 2";
+	public static final String AUTON_STRAIGHT_L2 = "Straight L2";
+	public static final String AUTON_STRAIGHT_L1 = "Straight L1";
 	public static final String AUTON_NEW_PATH = "New Path";
 	private String autonSelected;
 	private SendableChooser<String> autonChooser = new SendableChooser<>();
@@ -123,7 +126,8 @@ public class RobotContainer {
 		// choosers (for auton)
 		autonChooser.setDefaultOption("Do Nothing", AUTON_DO_NOTHING);
 		autonChooser.addOption("Move Straight Forward", AUTON_STRAIGHT_FORWARD);
-		autonChooser.addOption("Straight 2", AUTON_STRAIGHT_2);
+		autonChooser.addOption("Straight L2", AUTON_STRAIGHT_L2);
+		autonChooser.addOption("Straight L1", AUTON_STRAIGHT_L1);
 		autonChooser.addOption("New Path", AUTON_NEW_PATH);
 		SmartDashboard.putData("Auto choices", autonChooser);
 
@@ -247,7 +251,16 @@ public class RobotContainer {
 		NamedCommands.registerCommand("stop", new InstantCommand(()-> drivetrain.stop()));
 		NamedCommands.registerCommand("armL2", Commands.runOnce(()-> intake.armL2()));
 		NamedCommands.registerCommand("armSafe", Commands.runOnce(()-> intake.armSafe()));
-		NamedCommands.registerCommand("intakeOut", new InstantCommand(()-> intake.wheelOut(5)));
+		NamedCommands.registerCommand("intakeOut", new InstantCommand(()-> intake.wheelOut(1)));
+		NamedCommands.registerCommand("armL1Arm", Commands.runOnce(() -> {
+			intake.armClosedLoopController.setReference(intake.L1Position, SparkMax.ControlType.kPosition);
+		}));
+		NamedCommands.registerCommand("armL1Wrist", Commands.runOnce(() -> {
+			intake.wristClosedLoopController.setReference(intake.L1WristPosition, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0);
+		}));
+		NamedCommands.registerCommand("armL1Setup", Commands.runOnce(() -> {
+			intake.armClosedLoopController.setReference(0.33, SparkMax.ControlType.kPosition);
+		}));
 	}
 
 	private void configureButtonBindings() {
@@ -323,8 +336,11 @@ public class RobotContainer {
 				return new PathPlannerAuto("Do Nothing");	
 				//break;
 			
-			case AUTON_STRAIGHT_2:
-				return new PathPlannerAuto("straight 2");
+			case AUTON_STRAIGHT_L2:
+				return new PathPlannerAuto("straight L2");
+			
+			case AUTON_STRAIGHT_L1:
+				return new PathPlannerAuto("straight L1");
 
 			// case AUTON_Straight_And_turn:
 			// 	return new PathPlannerAuto("straight and turn");	

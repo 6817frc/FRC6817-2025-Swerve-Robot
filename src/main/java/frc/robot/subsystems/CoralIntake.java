@@ -92,16 +92,16 @@ public class CoralIntake extends SubsystemBase {
     double value = SmartDashboard.getNumber("PValue", 3);
     SmartDashboard.putNumber("PValue", value);
   }
-    double L1Position = 0.44; //TODO change to real value
-    double L2Position = 0.30; //wrist:0.30
-    double L3Position = 0.30; //wrist:0.43
+    public double L1Position = 0.44; //TODO change to real value
+    public double L2Position = 0.30; //wrist:0.30
+    public double L3Position = 0.30; //wrist:0.43
     double L4Position = 0.35; //TODO change to real value //wwrist:
-    double L1WristPosition = 0.58;
-    double L2WristPosition = 0.3;
-    double L3WristPosition = 0.41;
+    public double L1WristPosition = 0.58;
+    public double L2WristPosition = 0.3;
+    public double L3WristPosition = 0.41;
     //double L4WristPosition = 0;
-    double safePosition = 0.51; //wrist:0.23
-    double intakePosition = 0.30; //wrist:0.37
+    public double safePosition = 0.51; //wrist:0.23
+    public double intakePosition = 0.30; //wrist:0.37
     boolean armManualMode = false;
     boolean wristManualMode = false;
     boolean leftManualMode = false;

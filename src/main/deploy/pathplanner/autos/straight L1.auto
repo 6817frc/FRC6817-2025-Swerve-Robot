@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "straight"
+            "pathName": "straight L1"
           }
         },
         {
@@ -19,13 +19,37 @@
         {
           "type": "named",
           "data": {
-            "name": "armL2"
+            "name": "armL1Setup"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "armL1Wrist"
           }
         },
         {
           "type": "wait",
           "data": {
             "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "armL1Arm"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
           }
         },
         {
